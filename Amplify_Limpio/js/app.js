@@ -45,43 +45,52 @@ function initCursor() {
     let currentX = mouseX;
     let currentY = mouseY;
 
-    // Rastrear la posición real del mouse
-    document.addEventListener("mousemove", (e) => {
+    // 1. Rastrear posición del mouse
+    window.addEventListener("mousemove", (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
     });
 
-    // Animar con física de inercia
+    // 2. Animar con física (Suavidad pura)
     function animateCursor() {
-        // Velocidad de seguimiento (0.15 = balance perfecto entre lag suave y rapidez)
-        currentX += (mouseX - currentX) * 0.15;
+        currentX += (mouseX - currentX) * 0.15; // 0.15 es la fluidez
         currentY += (mouseY - currentY) * 0.15;
         
-        // Usar translate en lugar de left/top evita los tirones (lag)
-        cursor.style.transform = `translate(calc(${currentX}px - 50%), calc(${currentY}px - 50%))`;
+        // Asignación directa (cero lag)
+        cursor.style.left = currentX + "px";
+        cursor.style.top = currentY + "px";
+        
         requestAnimationFrame(animateCursor);
     }
     animateCursor();
     
-    // Interactividad con elementos
+    // 3. Interactividad Magnética y Hover
     document.querySelectorAll("a, button, .hover-lift, .portfolio-image").forEach((el) => {
-        // Crecer el cursor
+        
+        // Agregar suavidad nativa a los botones magnéticos para que no den tirones
+        if (el.classList.contains('primary-button') || el.classList.contains('header-cta') || el.classList.contains('secondary-button')) {
+            el.style.transition = "transform 0.3s ease-out, background 0.3s ease";
+            el.style.willChange = "transform";
+        }
+
+        // Hover: Crecer cursor
         el.addEventListener("mouseenter", () => cursor.classList.add("active"));
         
-        // Restablecer al salir
+        // Salir: Achicar cursor y soltar botón magnético
         el.addEventListener("mouseleave", () => {
             cursor.classList.remove("active");
-            el.style.transform = `translate(0px, 0px)`; // Soltar botón magnético
+            if (el.classList.contains('primary-button') || el.classList.contains('header-cta') || el.classList.contains('secondary-button')) {
+                el.style.transform = `translate(0px, 0px)`; // Regresa como resorte suave
+            }
         });
         
-        // Lógica Magnética (Solo para botones primarios o enlaces del header)
-        if (el.classList.contains('primary-button') || el.classList.contains('header-cta')) {
+        // Mover: Efecto magnético siguiendo al cursor
+        if (el.classList.contains('primary-button') || el.classList.contains('header-cta') || el.classList.contains('secondary-button')) {
             el.addEventListener("mousemove", (e) => {
                 const rect = el.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
                 
-                // Mueve el botón ligeramente hacia el cursor
                 el.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
             });
         }
