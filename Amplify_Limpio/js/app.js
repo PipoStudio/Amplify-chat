@@ -25,27 +25,67 @@ function inyectarElementos() {
 function initLoader() {
     const loader = document.querySelector(".site-loader");
     if (!loader) return;
-    
-    // TIEMPO DEL VIDEO: Forzamos que se muestre 1.8 segundos
     setTimeout(() => {
         loader.classList.add("hidden");
         setTimeout(() => loader.remove(), 1000); 
     }, 1800);
 }
 
+/* ==========================================
+   CURSOR CON INERCIA (LERP) Y EFECTO MAGNÉTICO
+========================================== */
 function initCursor() {
     const cursor = document.querySelector(".custom-cursor");
     if (!cursor) return;
+    
     document.body.style.cursor = "none";
     
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentX = mouseX;
+    let currentY = mouseY;
+
+    // Rastrear la posición real del mouse
     document.addEventListener("mousemove", (e) => {
-        cursor.style.left = `${e.clientX}px`;
-        cursor.style.top = `${e.clientY}px`;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
     });
+
+    // Animar con física de inercia
+    function animateCursor() {
+        // Velocidad de seguimiento (0.15 = balance perfecto entre lag suave y rapidez)
+        currentX += (mouseX - currentX) * 0.15;
+        currentY += (mouseY - currentY) * 0.15;
+        
+        // Usar translate en lugar de left/top evita los tirones (lag)
+        cursor.style.transform = `translate(calc(${currentX}px - 50%), calc(${currentY}px - 50%))`;
+        requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
     
+    // Interactividad con elementos
     document.querySelectorAll("a, button, .hover-lift, .portfolio-image").forEach((el) => {
+        // Crecer el cursor
         el.addEventListener("mouseenter", () => cursor.classList.add("active"));
-        el.addEventListener("mouseleave", () => cursor.classList.remove("active"));
+        
+        // Restablecer al salir
+        el.addEventListener("mouseleave", () => {
+            cursor.classList.remove("active");
+            el.style.transform = `translate(0px, 0px)`; // Soltar botón magnético
+        });
+        
+        // Lógica Magnética (Solo para botones primarios o enlaces del header)
+        if (el.classList.contains('primary-button') || el.classList.contains('header-cta')) {
+            el.addEventListener("mousemove", (e) => {
+                const rect = el.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                // Mueve el botón ligeramente hacia el cursor
+                el.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+            });
+        }
+        
         el.style.cursor = "none";
     });
 }
@@ -71,9 +111,9 @@ function initHeaderBehavior() {
     let lastScroll = 0;
     window.addEventListener("scroll", () => {
         const currentScroll = window.scrollY;
-        // MODO OSCURO PARA EL NAVBAR
         if (currentScroll > 40) {
-            header.style.background = "rgba(13, 13, 13, 0.85)";
+            // Negro verdadero con opacidad, en lugar de gris
+            header.style.background = "rgba(0, 0, 0, 0.6)";
             header.style.backdropFilter = "blur(12px)";
             header.style.borderBottom = "1px solid rgba(255, 255, 255, 0.05)";
         } else {
