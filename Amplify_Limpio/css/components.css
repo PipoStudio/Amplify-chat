@@ -19,18 +19,21 @@
     left: 0;
     width: 18px;
     height: 18px;
-    background: #ffffff;
+    background: #ffffff; /* Sólido puro para invertir colores perfecto */
     border-radius: 50%;
     pointer-events: none;
     z-index: 999999;
-    mix-blend-mode: difference;
-    will-change: transform;
-    transition: width 0.3s ease, height 0.3s ease;
+    mix-blend-mode: difference; /* Efecto de superposición */
+    transform: translate(-50%, -50%); /* Centrado exacto sin lag */
+    will-change: width, height, transform;
+    /* Solo animamos el tamaño, el movimiento lo hace el JS para evitar tirones */
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .custom-cursor.active {
     width: 75px;
     height: 75px;
+    /* Se mantiene blanco, el 'difference' ya lo hace ver como un cristal que invierte lo de abajo */
 }
 /* =========================================================
    NOISE OVERLAY
