@@ -11,31 +11,26 @@
     margin: 0 auto;
 }
 /* =========================================================
-   CURSOR
+   CURSOR (MIX-BLEND-MODE Y CÍRCULO SÓLIDO)
 ========================================================= */
 .custom-cursor {
     position: fixed;
     top: 0;
     left: 0;
-    width: 1rem;
-    height: 1rem;
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
     border-radius: 50%;
-    background: var(--black);
     pointer-events: none;
-    z-index: 9999;
+    z-index: 999999;
     mix-blend-mode: difference;
-    transform:
-        translate(-50%, -50%);
-    transition:
-        width 300ms ease,
-        height 300ms ease,
-        transform 80ms linear,
-        opacity 300ms ease;
+    will-change: transform;
+    transition: width 0.3s ease, height 0.3s ease;
 }
+
 .custom-cursor.active {
-    width: 5rem;
-    height: 5rem;
-    opacity: 0.9;
+    width: 75px;
+    height: 75px;
 }
 /* =========================================================
    NOISE OVERLAY
@@ -83,25 +78,26 @@
     }
 }
 /* =========================================================
-   LOADER
+   LOADER & LÍNEA DE PROGRESO (MODO OSCURO)
 ========================================================= */
 .site-loader {
     position: fixed;
     inset: 0;
-    background: var(--white);
+    background: var(--black);
     z-index: 999999;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 1.5rem;
-    transition:
-        opacity 1s ease,
-        visibility 1s ease;
+    transition: opacity 1s ease, visibility 1s ease;
 }
 .site-loader.hidden {
     opacity: 0;
     visibility: hidden;
+}
+.loader-logo {
+    color: var(--white);
 }
 /* =========================================================
    LOADER TEXT
@@ -122,8 +118,7 @@
 .loader-line {
     width: 14rem;
     height: 1px;
-    background:
-        rgba(13, 13, 13, 0.08);
+    background: rgba(255, 255, 255, 0.15);
     overflow: hidden;
     position: relative;
 }
@@ -134,12 +129,8 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background: var(--black);
-    animation:
-        loadingLine
-        1.6s
-        cubic-bezier(0.16, 1, 0.3, 1)
-        infinite;
+    background: var(--white);
+    animation: loadingLine 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 @keyframes loadingLine {
     to {
@@ -486,35 +477,4 @@
         top: 1rem;
         right: 1rem;
     }
-}
-/* =========================================================
-   INYECCIÓN AUTOMÁTICA: MODO OSCURO Y CURSOR FLUIDO
-========================================================= */
-body { 
-    background: var(--black) !important; 
-    color: var(--white) !important; 
-}
-
-.custom-cursor {
-    width: 12px !important;
-    height: 12px !important;
-    background: var(--peach) !important;
-    mix-blend-mode: normal !important; /* Quitamos la inversión de color rara */
-    transition: left 0.12s ease-out, top 0.12s ease-out, width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease !important;
-}
-
-.custom-cursor.active {
-    width: 75px !important;
-    height: 75px !important;
-    background: rgba(255, 180, 132, 0.15) !important;
-    border: 1px solid var(--peach) !important;
-    opacity: 1 !important;
-}
-
-.site-loader {
-    background: var(--black) !important;
-}
-
-.loader-logo {
-    color: var(--white) !important;
 }
